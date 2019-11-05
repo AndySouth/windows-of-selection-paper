@@ -1,0 +1,1657 @@
+---
+title: "windows-of-selection-figures"
+author: "Andy South, Rosemary Lees and Ian Hastings"
+date: "`r Sys.Date()`"
+#output: pdf_document
+output: word_document
+---
+
+Takes c 10 mins to run.
+
+Expected that figs may look bit weird in doc, but tiffs are good. Word resizes so right click on images and reset can help.
+
+Order of Figures for paper :
+
+1. window diagram 
+2. IVCC data concentration
+3. IVCC data time
+4.  Agossa spray hut trials by time
+5. Li tick data & implications
+6. Georghiou culex data & implications
+7. selection with uncertain dominance
+
+SI
+S2.1. exposure effects on windows
+S2.2. knockdown for IVCC time expts
+S2.3. controls for IVCC time expts
+
+S3.1. Anshebo nets by time and concentration
+S3.2. Bagi permethrin concentration
+S3.3. Etang nets by concentration and washes
+S3.4. Mahama nets by time
+S3.5. Corbel nets concentration heterozygotes
+S3.6. McKenzie Whitton blowfly heterozygotes
+
+S5.1. polygenic windows 
+
+
+```{r libraries, include=FALSE}
+
+#(data are read in and manipulated by ir_assays2017.Rmd, just selected figures here)
+
+library(devtools)
+# code to make windows of selection diagrams
+#devtools::install_github("AndySouth/wos")
+# code to run resistance evolution simulations
+#devtools::install_github("AndySouth/resistance")
+
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(knitr) # for kable
+library(wos) #for wos_diag, wos_sim etc.
+library(resistance) 
+library(patchwork) #for plot_layout
+library(RColorBrewer)
+
+#to get colour palette same in plots i.e. have RS & SS the same whether there are RS & SR or no SR too
+#genotype_pallete <- brewer.pal('Dark2', n=3)
+#hack to allow me to get two greens, and for darkness I'm using 4th colour of each 5 col palette
+gpal <- c(brewer.pal('Reds',n=5)[3],
+          brewer.pal('Greens',n=5)[3],
+          brewer.pal('Greens',n=5)[4],
+          brewer.pal('Blues',n=5)[3])
+
+names(gpal) <- c("RR","SR","RS","SS")
+
+gpal2 <- c(brewer.pal('Reds',n=5)[3],
+           brewer.pal('Blues',n=5)[3])
+
+names(gpal2) <- c("local","susceptible")
+
+#to allow reverse logscale
+library("scales")
+reverselog_trans <- function(base = exp(1)) {
+    trans <- function(x) -log(x, base)
+    inv <- function(x) base^(-x)
+    scales::trans_new(paste0("reverselog-", format(base)), trans, inv, 
+              scales::log_breaks(base = base), 
+              domain = c(1e-100, Inf))
+}
+
+```
+
+```{r, eval=TRUE, include=FALSE}
+#set to eval=TRUE to make figs for submission
+
+library(knitr)
+
+# options to create final publication quality figures
+# word doc summarises & figs get stored
+opts_chunk$set(dev="tiff",
+               dev.args=list(compression="lzw"),
+               dpi=300,
+               cache=FALSE,
+               fig.path='wosfigs/',
+               fig.width=8.5,
+               fig.height=8.5)
+```
+
+
+```{r read-in-data, eval=TRUE, include=FALSE}
+
+#read in file created by ir_assays2017.Rmd
+df_tidy <- read_csv('spray_data_tidy_nosumi.csv')
+#filtering out muheza culex only measured at 9 months
+df_tidy_muheza <- filter(df_tidy, strain=='muheza')
+df_tidy <- filter(df_tidy, strain!='muheza')
+```
+
+
+
+\pagebreak
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8.5, fig.width=7.5, fig.cap="window diagram with heterozygotes, selective advantage and time-to-resistance"}
+
+#makes plot objects that are plotted in following chunk
+gg_diag_sel <- wos_diagram(mort_slope=3, sr=FALSE, rr_cost=0.1, legendpos = 'right', title = "A. window of selection")
+
+#takes c 10 mins to run, set conc_n to <30 to make it quicker for test
+conc_n <- 50
+
+#exposure0.3 probably more realistic given that males exposed same as f
+#e.g. could be no males & 0.6 females
+#any lower than this and time-to-resistance outside the window of dominance is >1000
+exposure <- 0.3
+mort_slope=3 
+win_dom_strt=0.5 
+rr_cost=0
+
+dfsim <- NULL
+dfadv <- NULL
+
+for(startfreq in c(0.01,0.0001))
+{
+  
+  #rbind results for different starting frequencies
+  dfsim <- rbind(dfsim, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=TRUE, adv=FALSE, exposure=exposure, startfreq=startfreq, plot=FALSE ))
+  
+  
+  dfadv <- rbind(dfadv, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=FALSE, adv=TRUE, exposure=exposure, startfreq=startfreq, plot=FALSE )) 
+
+}
+
+
+gg_diag_dom <- wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = TRUE, sim=FALSE, plot=FALSE, lab_dom=5, title = "B. window of dominance", legendpos = 'right' )
+
+
+#log selective advantage
+gg_adv <- wos_plot_sim(dfadv, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=FALSE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title=paste0("C. selective advantage"), shape='start_frequency')
+
+gg_sim <- wos_plot_sim(dfsim,
+                       xreverse=TRUE, xlog=FALSE, ylog=FALSE, xtxt=FALSE,plot=FALSE,
+                       title=paste0("D. simulation"), shape='start_frequency')
+
+#vertical lines for window opening and closing
+#ugly hack copied from wos_diagram violating DRY
+win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_rr))]
+#min conc where mort_ss > mort_rr
+win_closes <- dfadv$conc[min(which(dfadv$mort_ss > dfadv$mort_rr))]
+sr_win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_sr))]
+  
+ggvl1 <- geom_vline( xintercept = c(win_opens,win_closes), linetype='dashed', lwd=1, col='grey')
+        #sr window opening
+ggvl2 <- geom_vline( xintercept = c(sr_win_opens), linetype='dotted', lwd=1, col='grey')
+
+gg_adv <- gg_adv + ggvl1 + ggvl2
+gg_sim <- gg_sim + ggvl1 + ggvl2
+#end of ugly hack bit
+
+
+```
+
+\pagebreak
+
+```{r wos-fig1-4panel, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.height=10, fig.width=7.5, fig.cap="testing 4 panels for fig1"}
+
+#uses plot objects created in previous chunks
+
+plot(gg_diag_sel /
+     gg_diag_dom / 
+     (gg_adv + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2) +
+       scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1),limits=c(0.000001,1), trans='log')) / 
+     (gg_sim + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2) + ylim(c(0,500))) +
+     plot_layout(ncol = 1, heights = c(2,2.5,1,1)))
+
+
+
+```
+
+\pagebreak
+
+
+
+```{r wos-fig-S2.1-exposure05, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.height=7.5, fig.width=7.5, fig.cap="exposure 0.5"}
+
+#takes c 10 mins to run, set conc_n to <30 to make it quicker for test
+#set to 50 for paper figs
+conc_n <- 30
+
+#exposure0.3 probably more realistic given that males exposed same as f
+#e.g. could be no males & 0.6 females
+#any lower than this and time-to-resistance outside the window of dominance is >1000
+exposure <- 0.5
+mort_slope=3 
+win_dom_strt=0.5 
+rr_cost=0
+
+dfsim <- NULL
+dfadv <- NULL
+
+for(startfreq in c(0.01,0.0001))
+{
+  
+  #rbind results for different starting frequencies
+  dfsim <- rbind(dfsim, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=TRUE, adv=FALSE, exposure=exposure, startfreq=startfreq, plot=FALSE ))
+  
+  
+  dfadv <- rbind(dfadv, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=FALSE, adv=TRUE, exposure=exposure, startfreq=startfreq, plot=FALSE )) 
+
+}
+
+
+gg_diag_dom <- wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = TRUE, sim=FALSE, plot=FALSE, lab_dom=5, title = "A. window of dominance", legendpos = 'right' )
+
+
+#log selective advantage
+gg_adv <- wos_plot_sim(dfadv, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=FALSE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title=paste0("B. selective advantage, high exposure 0.5"), shape='start_frequency')
+
+gg_sim <- wos_plot_sim(dfsim,
+                       xreverse=TRUE, xlog=FALSE, ylog=FALSE, xtxt=FALSE,plot=FALSE,
+                       title=paste0("C. simulation, high exposure 0.5"), shape='start_frequency')
+
+#vertical lines for window opening and closing
+#ugly hack copied from wos_diagram violating DRY
+win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_rr))]
+#min conc where mort_ss > mort_rr
+win_closes <- dfadv$conc[min(which(dfadv$mort_ss > dfadv$mort_rr))]
+sr_win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_sr))]
+  
+ggvl1 <- geom_vline( xintercept = c(win_opens,win_closes), linetype='dashed', lwd=1, col='grey')
+        #sr window opening
+ggvl2 <- geom_vline( xintercept = c(sr_win_opens), linetype='dotted', lwd=1, col='grey')
+
+gg_adv <- gg_adv + ggvl1 + ggvl2
+gg_sim <- gg_sim + ggvl1 + ggvl2
+
+plot(gg_diag_dom / 
+    (gg_adv + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2) +
+        #      scale_y_continuous(trans='log')) /        
+       scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1),limits=c(0.000001,1), trans='log')) / 
+
+     (gg_sim + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2)) + 
+     ylim(c(0,500))) +
+     plot_layout(ncol = 1, heights = c(2,1,1))
+
+#END of new SI fig testing diff exposure 0.5
+```
+
+```{r wos-fig-S2.1-exposure01, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.height=7.5, fig.width=7.5, fig.cap="exposure 0.1"}
+
+#takes c 10 mins to run, set conc_n to <30 to make it quicker for test
+#set to 50 for paper figs
+conc_n <- 30
+
+#exposure0.3 probably more realistic given that males exposed same as f
+#e.g. could be no males & 0.6 females
+#any lower than this and time-to-resistance outside the window of dominance is >1000
+exposure <- 0.1
+mort_slope=3 
+win_dom_strt=0.5 
+rr_cost=0
+
+dfsim <- NULL
+dfadv <- NULL
+
+for(startfreq in c(0.01,0.0001))
+{
+  
+  #rbind results for different starting frequencies
+  dfsim <- rbind(dfsim, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=TRUE, adv=FALSE, exposure=exposure, startfreq=startfreq, plot=FALSE ))
+  
+  
+  dfadv <- rbind(dfadv, wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = FALSE, sim=FALSE, adv=TRUE, exposure=exposure, startfreq=startfreq, plot=FALSE )) 
+
+}
+
+
+# keep the wos bit in even though I will crop it, to keep figure panels same size as previous
+gg_diag_dom <- wos_diagram(conc_n=conc_n, mort_slope=mort_slope, win_dom_strt=win_dom_strt, rr_cost=rr_cost, addlabels = TRUE, sim=FALSE, plot=FALSE, lab_dom=5, title = "window of dominance", legendpos = 'right' )
+
+
+#log selective advantage
+gg_adv <- wos_plot_sim(dfadv, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=FALSE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title=paste0("D. selective advantage, low exposure 0.1"), shape='start_frequency')
+
+gg_sim <- wos_plot_sim(dfsim,
+                       xreverse=TRUE, xlog=FALSE, ylog=FALSE, xtxt=FALSE,plot=FALSE,
+                       title=paste0("E. simulation, low exposure 0.1"), shape='start_frequency')
+
+#vertical lines for window opening and closing
+#ugly hack copied from wos_diagram violating DRY
+win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_rr))]
+#min conc where mort_ss > mort_rr
+win_closes <- dfadv$conc[min(which(dfadv$mort_ss > dfadv$mort_rr))]
+sr_win_opens <- dfadv$conc[max(which(dfadv$mort_ss > dfadv$mort_sr))]
+  
+ggvl1 <- geom_vline( xintercept = c(win_opens,win_closes), linetype='dashed', lwd=1, col='grey')
+        #sr window opening
+ggvl2 <- geom_vline( xintercept = c(sr_win_opens), linetype='dotted', lwd=1, col='grey')
+
+gg_adv <- gg_adv + ggvl1 + ggvl2
+gg_sim <- gg_sim + ggvl1 + ggvl2
+
+plot(gg_diag_dom / 
+    (gg_adv + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2) +
+        #      scale_y_continuous(trans='log')) /        
+       scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1,1),limits=c(0.000001,1), trans='log')) / 
+
+     (gg_sim + scale_shape_manual(values=c(0,2),guide=guide_legend(title='start resistance\nfrequency')) + geom_line(linetype=2)) + 
+     ylim(c(0,500))) +
+     plot_layout(ncol = 1, heights = c(2,1,1))
+
+#END of new SI fig testing diff exposure 0.1
+```
+
+\pagebreak
+
+```{r wos-fig2-conc, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=3.5, fig.cap="IVCC data concentration"}
+
+#read in file created by ir_concentration2015
+df_tidy_conc <- read_csv('spray_concentration2015.csv')
+
+#May2019 edit to just show 24hr mortality
+df_tidy_conc <- dplyr::filter(df_tidy_conc, hours==24)
+
+gg <- df_tidy_conc %>% 
+  
+      ggplot(aes(x=Concentration, y=mort_pcent, col=resistance))+
+      geom_point(size=0.5) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      #labs(title = "Deltamethrin") +
+      #to add hours label on right
+      #May2019 edit to just show 24hr mortality
+      #scale_y_continuous(sec.axis = sec_axis(~.*1, name="hours after exposure", labels = NULL),
+      scale_y_continuous(limits = c(0,100),
+                         breaks = c(0,50,100)) +      
+
+      labs(y='mortality %') + 
+      labs(x='Concentration % (declining)') + 
+        
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+      #May2019 edit to just show 24hr mortality
+      #facet_grid( hours ~ . ) +
+
+      #reverse log scale
+      scale_x_continuous(trans=reverselog_trans(10), 
+                         breaks=c(0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+      #adding WHO diagnostic concentrations
+      annotate("text", x = 0.05, y = 75, label = "1x") +  
+      annotate("text", x = 0.25, y = 75, label = "5x") +  
+      annotate("text", x = 0.5, y = 75, label = "10x") +
+      geom_vline( xintercept = c(0.05,0.25,0.5), linetype='dotted')
+      #annotate("vline", xintercept = c(0.05,0.25,0.5))
+      #annotate("text", x = c(0.05,0.25,0.5), y = c(75,75,75), label = c("1X","5X","10X")) +
+      
+plot(gg)
+
+```
+
+
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5.8, fig.height=3.2}
+#eval=FALSE decided we didn't need diff in mortality plots
+
+## Difference in mortality between resistant and susceptible by concentration.
+## Greatest at intermediate concentrations, centred on the WHO diagnostic dose.
+
+#Can either do for each replicate and then calculate mean, or just do for the calculated means. 
+#I'm not sure it makes sense to do for individual replicates.
+
+#read in file created by ir_concentration2015
+df_tidy_conc <- read_csv('spray_concentration2015.csv')
+
+#probably need to calc mean for resistant & susceptible, and then the difference between them before plotting
+
+#get mean for resistant & susceptible
+df_diff <- df_tidy_conc %>%
+  group_by(hours, resistance, Concentration) %>%
+  summarise(mean_mort = mean(mort_pcent), n = n())
+
+#how to subtract resistant-susceptible for each value of hours and concentration
+#maybe used tidyr spread to get R & S in differenet columns
+#cool! worked
+df_diff <- df_diff %>% 
+  tidyr::spread(resistance, mean_mort) %>%
+  #could calculate this as proportion, instead of straight difference
+  mutate(mort_diff = susceptible-resistant)
+
+
+gg <- df_diff %>% 
+  
+      ggplot(aes(x=Concentration, y=mort_diff))+
+      #geom_point(size=0.5) +
+      geom_line(col='darkgreen') +
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      labs(title = "Deltamethrin") +
+      #to add hours label on right
+      scale_y_continuous(sec.axis = sec_axis(~.*1, name="hours after exposure", labels = NULL),
+                         limits = c(0,100),
+                         breaks = c(0,50,100)) +      
+
+      labs(y='mortality difference S-R (%)') + 
+      labs(x='Concentration % (declining)') + 
+        
+      scale_color_hue(l=30) + #higher l value makes lighter
+      
+      facet_grid( hours ~ . ) +
+
+      #reverse log scale
+      scale_x_continuous(trans=reverselog_trans(10), 
+                         breaks=c(0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+      #adding WHO diagnostic concentrations
+      annotate("text", x = 0.05, y = 75, label = "1x") +  
+      annotate("text", x = 0.25, y = 75, label = "5x") +  
+      annotate("text", x = 0.5, y = 75, label = "10x") +
+      geom_vline( xintercept = c(0.05,0.25,0.5), linetype='dotted')
+      #annotate("vline", xintercept = c(0.05,0.25,0.5))
+      #annotate("text", x = c(0.05,0.25,0.5), y = c(75,75,75), label = c("1X","5X","10X")) +
+      
+plot(gg)
+
+```
+
+
+
+
+```{r wos-fig3-time, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="IVCC data time"}
+
+### deltamethrin mortality by month after spraying
+
+#to get plots in order
+df_tidy$species <- factor(df_tidy$species, levels=c("An. gambiae","An. funestus","A. aegypti"))
+
+#for( sp_sel in sort(unique(df_tidy$species)))
+# for( sp_sel in c("An. gambiae","An. funestus","A. aegypti"))  
+# {
+  
+  # just deltamethrin
+  #for(ins_sel in unique(df_av$insecticide))
+  for(ins_sel in 'deltamethrin')
+  #for(ins_sel in 'sumishield')
+  {
+    gg <- df_tidy %>% filter(insecticide==ins_sel) %>%
+                              #species==sp_sel) %>%
+      #filter(strain==strain_sel) %>%
+      #for summary filter out 30min 24hrs & 7 days after exposure
+      #filter(hours %in% c(0.5,24,168) ) %>%
+      #filter(hours %in% c(120) ) %>% #temp to compare to Agossa2018, v. little diff to 24h
+      filter(hours %in% c(24) ) %>%
+      # works to show 1 line per rep
+      # ggplot(aes(x=month, y=mort_pcent, col=resistance, group=interaction(resistance,repnum))) +
+      # instead I'd like to show mean line & points for rep values, stat=summary below sorts that
+      ggplot(aes(x=month, y=mort_pcent, col=resistance))+
+      geom_point(size=0.5) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      #labs(title = paste(ins_sel,":",sp_sel)) +
+      #labs(title = paste(sp_sel," ",ins_sel)) +
+      #to add hours label on right
+      #not needed if just 24
+      # scale_y_continuous(sec.axis = sec_axis(~.*1, name="hours after exposure", labels = NULL),
+      #                    limits = c(0,100),
+      #                    breaks = c(0,50,100)) +  
+      scale_y_continuous(limits = c(0,100),
+                         breaks = c(0,50,100)) +
+      #setting x breaks
+      scale_x_continuous(breaks=c(0,1,3,5,7,9,12,18)) + 
+      labs(y='mortality % 24hrs') + # over 3 replicates (& sd)') +
+      labs(x='months after spraying') + 
+      
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+      #facet_grid( hours ~ surface )
+      #facet_grid( . ~ surface ) #when just 24
+      facet_grid( species ~ surface ) #when just 24
+
+    plot(gg)
+  }
+#}
+
+```
+
+```{r wos-fig-S2.2-time-30m, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="IVCC data time"}
+
+### deltamethrin mortality by month after spraying
+# 30 min knockdown equiv. of fig3
+
+#to get plots in order
+df_tidy$species <- factor(df_tidy$species, levels=c("An. gambiae","An. funestus","A. aegypti"))
+
+#for( sp_sel in sort(unique(df_tidy$species)))
+# for( sp_sel in c("An. gambiae","An. funestus","A. aegypti"))  
+# {
+  
+  # just deltamethrin
+  #for(ins_sel in unique(df_av$insecticide))
+  for(ins_sel in 'deltamethrin')
+  #for(ins_sel in 'sumishield')
+  {
+    gg <- df_tidy %>% filter(insecticide==ins_sel) %>%
+                              #species==sp_sel) %>%
+      #filter(strain==strain_sel) %>%
+      #for summary filter out 30min 24hrs & 7 days after exposure
+      #filter(hours %in% c(0.5,24,168) ) %>%
+      #filter(hours %in% c(120) ) %>% #temp to compare to Agossa2018, v. little diff to 24h
+      filter(hours %in% c(0.5) ) %>%
+      ggplot(aes(x=month, y=mort_pcent, col=resistance))+
+      geom_point(size=0.5) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      
+      scale_y_continuous(limits = c(0,100),
+                         breaks = c(0,50,100)) +
+      #setting x breaks
+      scale_x_continuous(breaks=c(0,1,3,5,7,9,12,18)) + 
+      labs(y='30 minute knockdown') + # over 3 replicates (& sd)') +
+      labs(x='months after spraying') + 
+      
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+      facet_grid( species ~ surface ) #when just 24
+
+    plot(gg)
+  }
+#}
+
+```
+
+```{r wos-notused-time-7days, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="IVCC data time"}
+
+# 7 day mortality not shown in SI
+
+### deltamethrin mortality by month after spraying
+# 168h mortality equiv. of fig3
+
+#to get plots in order
+df_tidy$species <- factor(df_tidy$species, levels=c("An. gambiae","An. funestus","A. aegypti"))
+
+#for( sp_sel in sort(unique(df_tidy$species)))
+# for( sp_sel in c("An. gambiae","An. funestus","A. aegypti"))  
+# {
+  
+  # just deltamethrin
+  #for(ins_sel in unique(df_av$insecticide))
+  for(ins_sel in 'deltamethrin')
+  #for(ins_sel in 'sumishield')
+  {
+    gg <- df_tidy %>% filter(insecticide==ins_sel) %>%
+                              #species==sp_sel) %>%
+      #filter(strain==strain_sel) %>%
+      #for summary filter out 30min 24hrs & 7 days after exposure
+      filter(hours %in% c(168) ) %>%
+      #filter(hours %in% c(120) ) %>% #temp to compare to Agossa2018, v. little diff to 24h
+      #filter(hours %in% c(0.5) ) %>%
+      ggplot(aes(x=month, y=mort_pcent, col=resistance))+
+      geom_point(size=0.5) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      
+      scale_y_continuous(limits = c(0,100),
+                         breaks = c(0,50,100)) +
+      #setting x breaks
+      scale_x_continuous(breaks=c(0,1,3,5,7,9,12,18)) + 
+      labs(y='mortality % 7 days') + # over 3 replicates (& sd)') +
+      labs(x='months after spraying') + 
+      
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+      facet_grid( species ~ surface ) #when just 24
+
+    plot(gg)
+  }
+#}
+
+```
+
+
+
+
+```{r wos-fig-S2.3-time-controls, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="IVCC data time"}
+
+### mortality of control mosquitoes by month after spraying
+# equiv. of fig3 but with no insecticide
+
+#to get plots in order
+df_tidy$species <- factor(df_tidy$species, levels=c("An. gambiae","An. funestus","A. aegypti"))
+
+#for( sp_sel in sort(unique(df_tidy$species)))
+# for( sp_sel in c("An. gambiae","An. funestus","A. aegypti"))  
+# {
+  
+  # just control
+  #for(ins_sel in unique(df_av$insecticide))
+  for(ins_sel in 'control')
+  #for(ins_sel in 'sumishield')
+  {
+    gg <- df_tidy %>% filter(insecticide==ins_sel) %>%
+                              #species==sp_sel) %>%
+      #filter(strain==strain_sel) %>%
+      #for summary filter out 30min 24hrs & 7 days after exposure
+      #filter(hours %in% c(0.5,24,168) ) %>%
+      #filter(hours %in% c(120) ) %>% #temp to compare to Agossa2018, v. little diff to 24h
+      filter(hours %in% c(24) ) %>%
+      # works to show 1 line per rep
+      # ggplot(aes(x=month, y=mort_pcent, col=resistance, group=interaction(resistance,repnum))) +
+      # instead I'd like to show mean line & points for rep values, stat=summary below sorts that
+      ggplot(aes(x=month, y=mort_pcent, col=resistance))+
+      geom_point(size=0.5) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      #labs(title = paste(ins_sel,":",sp_sel)) +
+      #labs(title = paste(sp_sel," ",ins_sel)) +
+      #to add hours label on right
+      #not needed if just 24
+      # scale_y_continuous(sec.axis = sec_axis(~.*1, name="hours after exposure", labels = NULL),
+      #                    limits = c(0,100),
+      #                    breaks = c(0,50,100)) +  
+      scale_y_continuous(limits = c(0,100),
+                         breaks = c(0,50,100)) +
+      #setting x breaks
+      scale_x_continuous(breaks=c(0,1,3,5,7,9,12,18)) + 
+      labs(y='control mortality % 24h') + # over 3 replicates (& sd)') +
+      labs(x='months after spraying') + 
+      
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+      #facet_grid( hours ~ surface )
+      #facet_grid( . ~ surface ) #when just 24
+      facet_grid( species ~ surface ) #when just 24
+
+    plot(gg)
+  }
+#}
+
+```
+
+
+
+```{r wos-fig-S3.2-bagi2015, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=3.5, fig.cap="Bagi 2015"}
+
+
+df_bagi <- read_csv('wos-data-bagi2015.csv')
+
+#removes blank rows and comments
+df_bagi <- filter(df_bagi, !is.na(mort_pcent))
+#remove control data at conc 0
+#df_bagi <- filter(df_bagi, concentration_ppm!=0)
+df_bagi <- mutate(df_bagi, mort_prob=mort_pcent/100)
+
+#for logistic regression from ggplot help
+binomial_smooth <- function(...) {
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), ...)
+}
+
+gg <- df_bagi %>% 
+  
+      ggplot(aes(x=concentration_ppm, y=mort_prob, col=Strain))+ #col=resistance))+
+      geom_point(size=1) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      # log scale to replicate bagi fig 3
+      #scale_x_continuous(trans="log") + 
+      #try replacing mean with default smoother
+      geom_smooth(se=FALSE) + 
+      #fails
+      #geom_smooth(se=FALSE, method = "gam", formula = y ~ s(x, bs = "cs")) +
+      #geom_smooth(se=FALSE, method = "lm") +
+      #trying logistic but had to change data to 0-1
+      #left SE in for now
+      #binomial_smooth() +
+      
+      theme_minimal() +
+      # theme(panel.grid.minor.x = element_blank(),
+      #       panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      # labs(title = "Deltamethrin") 
+
+      labs(y='mortality % 24hrs') + 
+      labs(x='Concentration ppm (declining)') + 
+        
+      # scale_color_hue(l=30) + #higher l value makes lighter
+
+      #reverse log scale
+      scale_x_continuous(trans=reverselog_trans(10)) +  
+      # scale_x_continuous(trans=reverselog_trans(10), 
+      #                     breaks=c(0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+      #adding WHO diagnostic concentrations
+      # annotate("text", x = 0.05, y = 75, label = "1x") +  
+      # annotate("text", x = 0.25, y = 75, label = "5x") +  
+      # annotate("text", x = 0.5, y = 75, label = "10x") +
+      # geom_vline( xintercept = c(0.05,0.25,0.5), linetype='dotted')
+      NULL #to allow lines to be added and removed above
+      
+plot(gg)
+
+```
+
+
+```{r wos-fig4-agossa, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=7, fig.cap="Agossa 2018, Anopheles hut trials sumishield and deltamethrin"}
+# revising Agossa may2019
+# just 24hr mort for delta & 120hr mort for sumishield
+
+#df_ag <- read_csv('wos-data-agossa2018.csv')
+#using here package so that filepath works outside of the rmd
+library(here)
+df_ag <- read_csv(here('wos-data-agossa2018.csv'))
+
+# contains both free flying hut data cone_or_free == 'free' or 'cone'
+
+# temp testing
+#df_ag <- filter(df_ag, cone_or_free == 'free')
+
+#removes blank rows and comments
+df_ag <- filter(df_ag, !is.na(mortality))
+
+#may2019 just 24hr mort for delta & 120hr mort for sumishield
+df_ag <- filter(df_ag, (insecticide=='deltamethrin' & hours_after_exposure==24) |
+                       (insecticide=='sumishield' & hours_after_exposure==120) )
+
+#do one plot for free flying and one for cone bioassays
+for(conefree in c('cone','free'))
+  {
+    facet_labels <- c(deltamethrin="A. deltamethrin", sumishield="B. sumishield")  
+  
+    gg_free <- df_ag %>% 
+      
+      filter(cone_or_free == conefree ) %>%
+
+      ggplot(aes(x=month, y=mortality, col=resistance))+
+      geom_point(size=0.5) +
+      geom_line() +
+      theme_minimal() +
+      theme(panel.grid.minor.x = element_blank(),
+            panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5),
+            strip.text = element_text(hjust=0, size = 13)) + #facet labels
+      labs(title = "Free flying mosquitoes") +
+      #labs(title = paste(sp_sel," ",ins_sel)) +
+      #to add hours label on right
+      scale_y_continuous(#sec.axis = sec_axis(~.*1, name="hours after exposure", labels = NULL),
+                         limits = c(0,100),
+                         breaks = c(0,50,100)) +
+      scale_x_continuous(limits = c(0,8),
+                          breaks = c(0,2,4,6,8)) +
+      #scale_x_continuous() + 
+      labs(y='mortality %') + 
+      labs(x='months after spraying') + 
+      
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) + #higher l value makes lighter
+      
+
+      facet_grid( . ~ insecticide, labeller = labeller( insecticide = facet_labels)) 
+
+    
+    if (conefree == 'cone')
+    {
+      facet_labels <- c(deltamethrin="C. deltamethrin", sumishield="D. sumishield")  
+      
+      gg_cone <- gg_free
+      gg_cone <- gg_cone + labs(title = "Cone bioassays") +
+                 facet_grid( . ~ insecticide, labeller = labeller( insecticide = facet_labels))         
+    }
+
+}
+
+plot(gg_free / gg_cone)
+
+
+```
+
+
+
+```{r wos-fig-S3.1-anshebo, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=5}
+
+#using data provided by authors - there are a few more samples in months 15,21,33 not uncluded in paper
+#also 4 samples of wild type mortality from month 3 that suggest windows open by month3
+#might be easiest to leave them out 
+
+#see below for version using data I digitised from fig6
+
+df_anshebo <- read_delim(delim=',','wos-data-anshebo2014-fig6-from-authors.csv')
+df_anshebo <- filter(df_anshebo, !is.na(mortality))
+#remove rows with NA for month_cat (months 21 and 33)
+df_anshebo <- filter(df_anshebo, !is.na(month_cat))
+
+#get months in order
+#df_anshebo$month_cat <- factor(df_anshebo$month_cat, levels=c('3-6','14-20','26-32'))
+df_anshebo$month_cat <- factor(df_anshebo$month_cat, levels=c('3 to 6','14 to 20','26 to 32'))
+#reorder resistance just to make susceptible blue, wild red
+df_anshebo$resistance <- factor(df_anshebo$resistance, levels=c('wild','susceptible'))
+
+
+gg <- df_anshebo %>%
+
+      ggplot(aes(x=deltamethrin_conc, y=mortality, col=resistance, shape=species))+
+      geom_point(size=2) +
+      scale_shape(solid=FALSE) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      theme_minimal() +
+
+      scale_x_reverse() +
+      # scale_x_continuous(trans=reverselog_trans(10),
+      #                    #breaks=c(1,0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+      #                    breaks=c(1,0.1,0.01,0.001,0.0001)) +
+
+      # scale_y_continuous( limits = c(0,100),
+      #                     breaks = c(0,50,100)) +
+      #facetting by month_cat to make clearer
+      facet_grid(month_cat~.) +
+      #box around plots
+      theme(panel.border=element_rect(fill=NA, colour='grey') ) +
+      labs(y='mortality % 24hrs') +
+      labs(x='Deltamethrin concentration %') +
+
+      # theme(panel.grid.minor.x = element_blank(),
+      #       panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      # labs(title = "Deltamethrin") +
+      # #to add label on right
+      scale_y_continuous(sec.axis = sec_axis(~.*1, name="months after net distribution", labels = NULL),
+                         limits = c(0,100),
+                         breaks = c(0,50,100)) +
+
+      scale_color_hue(l=30,
+                      guide=guide_legend(title = 'strain')) #higher l value makes lighter
+
+    plot(gg)
+
+
+```
+
+```{r wos-notused-anshebo-time-only, eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=5}
+
+#plotted just against month using data provided by authors 
+#time effect looks not as strong as concentration
+
+df_anshebo <- read_delim(delim=',','wos-data-anshebo2014-fig6-from-authors.csv')
+df_anshebo <- filter(df_anshebo, !is.na(mortality))
+#remove rows with NA for month_cat (months 21 and 33)
+#df_anshebo <- filter(df_anshebo, !is.na(month_cat))
+
+#get months in order
+#df_anshebo$month_cat <- factor(df_anshebo$month_cat, levels=c('3 to 6','14 to 20','26 to 32'))
+#reorder resistance just to make susceptible blue, wild red
+df_anshebo$resistance <- factor(df_anshebo$resistance, levels=c('wild','susceptible'))
+
+gg <- df_anshebo %>%
+
+      #ggplot(aes(x=deltamethrin_conc, y=mortality, col=resistance, shape=month_cat))+
+      ggplot(aes(x=months, y=mortality, col=deltamethrin_conc))+ #, shape=month_cat))+
+      geom_point(size=2) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #geom_smooth(se=FALSE) + 
+      theme_minimal() +
+
+      #scale_x_reverse() +
+      # scale_x_continuous(trans=reverselog_trans(10),
+      #                    #breaks=c(1,0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+      #                    breaks=c(1,0.1,0.01,0.001,0.0001)) +
+
+      # scale_y_continuous( limits = c(0,100),
+      #                     breaks = c(0,50,100)) +
+      #facetting by month_cat to make clearer
+      facet_grid(resistance~.) +
+      #box around plots
+      theme(panel.border=element_rect(fill=NA, colour='grey') ) +
+      labs(y='% mortality') +
+      #labs(x='Deltamethrin concentration %') +
+      labs(x='months') +
+  
+      # theme(panel.grid.minor.x = element_blank(),
+      #       panel.background = element_rect(colour = 'grey60', fill=NA, size=0.5)) +
+      # labs(title = "Deltamethrin") +
+      # #to add label on right
+      # scale_y_continuous(sec.axis = sec_axis(~.*1, name="months after exposure", labels = NULL),
+      #                    limits = c(0,100),
+      #                    breaks = c(0,50,100)) +
+
+      #scale_color_hue(l=30) #higher l value makes lighter
+      scale_color_continuous(trans='reverse')
+
+    plot(gg)
+
+
+```
+
+
+
+```{r wos-fig-S3.3-etang-nets, echo=FALSE, message=FALSE, warning=FALSE, fig.width=4, fig.height=7, fig.cap="Anopheles on washed nets"}
+
+### etang2016 Anopheles on washed nets
+df_et <- read_csv('wos-data-etang2016.csv')
+
+#removes blank rows and comments
+df_et <- filter(df_et, !is.na(mortality))
+
+#two sets of data
+#1 test solution
+#2 washed nets
+
+df_et_net <- filter(df_et, insecticide=="net_deltamethrin")
+df_et_sol <- filter(df_et, insecticide=="soln_deltamethrin")
+
+gg_et_sol <- df_et_sol %>% 
+  
+      ggplot(aes(x=concentration, y=mortality, col=genotype))+
+      geom_point(size=1) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      geom_line() +
+      theme_minimal() +
+
+      theme( legend.position = 'bottom') +
+      theme(panel.grid.minor.y = element_blank()) +
+      ggtitle( "A.") + #" Anopheles gambiae, test solution , Etang 2016") +    
+    
+      #gpal2 pallete defined above
+      scale_colour_manual("Genotype", values = gpal2) +
+      # scale_color_hue(l=30) + #higher l value makes lighter
+  
+      #scale_x_continuous() +
+      #reverse log scale for concentration
+      scale_x_continuous(trans=reverselog_trans(10),
+                         breaks = c(0.001,0.005,0.01,0.05,0.1,0.5)) +
+ 
+      scale_y_continuous( limits = c(0,100),
+                          breaks = c(0,50,100)) +
+
+      labs(y='mortality % 24hrs') + 
+      labs(x='Concentration deltamethrin % declining')
+
+gg_et_net <- df_et_net %>% 
+  
+      ggplot(aes(x=washes, y=mortality, col=genotype))+
+      geom_point(size=1) +
+      geom_line() +
+      theme_minimal() +
+      theme( legend.position = 'bottom') +  
+      ggtitle( "B.") + #" 24hr mortality vs net washes") +    
+    
+      #gpal2 pallete defined above
+      scale_colour_manual("Genotype", values = gpal2) +
+  
+      scale_x_continuous() +
+      scale_y_continuous( limits = c(0,100),
+                          breaks = c(0,50,100)) +
+
+      labs(y='mortality % 24hrs') + 
+      labs(x='number of net washes')
+  
+gg_et_net_knock <- df_et_net %>% 
+  
+      ggplot(aes(x=washes, y=knockdown, col=genotype))+
+      geom_point(size=1) +
+      geom_line() +
+      theme_minimal() +
+      theme( legend.position = 'bottom') +  
+      ggtitle( "C.") + #" 60 min knockdown vs net washes") +    
+    
+      #gpal2 pallete defined above
+      scale_colour_manual("Genotype", values = gpal2,
+                      guide=guide_legend(title = 'strain')) +
+  
+      scale_x_continuous() +
+      scale_y_continuous( limits = c(0,100),
+                          breaks = c(0,50,100)) + 
+
+      labs(y='knockdown 1hr') + 
+      labs(x='number of net washes')
+
+
+#using patchwork
+
+(gg_et_sol + theme(legend.position = "none")) / 
+  (gg_et_net + theme(legend.position = "none")) / 
+  gg_et_net_knock
+
+
+```
+
+```{r wos-fig-S3.4-mahama-nets, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=3, fig.cap="Mahama nets"}
+
+### mahama2007 Anopheles on nets
+df_ma <- read_csv('wos-data-mahama2007.csv')
+
+names(gpal2) <- c("resistant","susceptible")
+
+#removes blank rows and comments
+df_ma <- filter(df_ma, !is.na(mortality))
+
+gg_ma <- df_ma %>% 
+  
+      ggplot(aes(x=month, y=mortality, col=genotype))+
+      geom_point(size=2) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      #geom_line() +
+      theme_minimal() +
+
+      #theme( legend.position = 'bottom') +
+      theme(panel.grid.minor.y = element_blank()) +
+      #ggtitle( "A.") + #" Anopheles gambiae, test solution , Etang 2016") +    
+  
+      #scale_x_continuous() +
+      labs(y='mortality % 24hrs') + 
+      labs(x='month after net distribution') +
+      
+      #gpal2 pallete defined above
+      scale_colour_manual("Genotype", values = gpal2,
+                          guide=guide_legend(title = 'strain')) 
+      # scale_color_hue(l=30) + #higher l value makes lighter
+  
+
+
+
+#using patchwork
+gg_ma
+
+
+
+```
+
+
+
+
+```{r wos-fig5-li, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6, fig.cap="Published mortality data for ticks including heterozygotes, selective advantage and time-to-resistance"}
+
+### Li2008, Permethrin resistance in cattle ticks, includes heterozygotes
+
+df_li <- read_csv('wos-data-li2008.csv')
+
+#removes blank rows and comments
+df_li <- filter(df_li, !is.na(mort_assumed))
+
+RR <- filter(df_li,genotype=='RR') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+SR <- filter(df_li,genotype=='SR') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+RS <- filter(df_li,genotype=='RS') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+#set SR to the mean of SR & SS
+SR <- (SR+RS)/2
+SS <- filter(df_li,genotype=='SS') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+#TODO simpler to just calc dominance heer or add cleaner function to resistance to calc dominance
+#beware function expects fitness 0-1
+model_inputs <- resistance::inputs_from_gen_fit(SS=(100-SS)/100, SR=(100-SR)/100, RR=(100-RR)/100)
+
+#todo improve this
+#beware this relies on being same number of RR,SR,SS all in same order
+#just fills for RR
+df_li$dominance <- NA
+df_li$dominance[1:length(model_inputs$dom)] <- model_inputs$dom
+
+gg_li <- df_li %>% 
+  
+      ggplot(aes(x=concentration, y=mortality, col=genotype))+
+      geom_point(size=1) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      geom_line() +
+      #adding dominance values as text
+      geom_text(aes(y=110, label=signif(dominance,1), col=NULL), size=2.6, col='grey40', show.legend=FALSE) +
+      annotate("text", x=Inf, y=120, hjust=0, label = "dominance", cex=2.6, col='grey40') +
+  
+      theme_minimal() +
+
+      theme( legend.position = 'bottom') +  
+      ggtitle( "A.") +    
+    
+      #gpal pallete defined above, to keep RR, SS same irrespective of other genotypes
+      scale_colour_manual("Genotype", values = gpal) +
+  
+      #facet_wrap('insecticide', ncol=1) +
+  
+      #scale_x_continuous(breaks=c(1,0.1,0.01,0.001,0.0001)) +
+      #reverse log scale for concentration
+      scale_x_continuous(trans=reverselog_trans(10)) +
+ 
+      #>100 to allow for dominance values
+      scale_y_continuous( limits = c(0,120),
+                          breaks = c(0,50,100)) +#,110),
+                          #labels = c(0,50,100,'dominance')) +  
+      labs(y='mortality') + 
+      labs(x='permethrin concentration % (declining)')
+  
+      # scale_color_hue(l=30) + #higher l value makes lighter
+
+    #plot(gg_li)
+
+#Now can I do 3 panel plot for Li
+#A mortality
+#B log selective advantage, freq .01 & .001
+#C sim time-to-r
+
+# time-to-resistance from simulations corresponding to the field data 
+# and selective advantage, and relative fitness plots logged and not
+
+dfsim_li <- NULL
+dfadv_li <- NULL
+
+exposure = 0.3
+
+for(startfreq in c(0.01,0.0001))
+{
+
+  #li
+  dfmortbygen <- df_li
+  #mort needs to be 0-1
+  dfmortbygen$mort_assumed <- 0.01*dfmortbygen$mort_assumed
+  
+  #rbind results for different starting frequencies
+  dfsim_li <- rbind(dfsim_li, wos_sim(dfmortbygen=dfmortbygen,
+                   x='concentration',
+                   y='mort_assumed',
+                   exposure = exposure,
+                   max_gen = 1000,
+                   startfreq = startfreq,
+                   plot = FALSE))
+  
+  
+  dfadv_li <- rbind(dfadv_li, wos_advantage(dfmortbygen=dfmortbygen,
+                       x='concentration',
+                       y='mort_assumed',
+                       exposure = exposure,
+                       startfreq = startfreq)) 
+
+}
+
+gg_lisim <- wos_plot_sim(dfsim_li, plot=FALSE, xreverse=TRUE, xlog=TRUE, xtxt=FALSE, title='C.', shape='start_frequency', addgrid=TRUE)
+
+#log selective advantage
+gg_liadv_log <- wos_plot_sim(dfadv_li, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=TRUE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title='B.', shape='start_frequency', addgrid=TRUE)
+
+
+#plot using patchwork
+
+#theme elements to use
+th_no_lg <- theme(legend.position = "none")
+th_no_tx <- theme(axis.title.x = element_blank())
+th_no_gmy <- theme(panel.grid.minor.y = element_blank())
+th_sm_ti <- theme(plot.title = element_text(size = rel(0.6)))
+
+#had to reset log scale to get pretty breaks
+#(gg_li + th_no_lg)
+(gg_li) / (gg_liadv_log + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency')) +
+          scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1),trans='log')) /
+          (gg_lisim + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency'))) + 
+
+ plot_layout(ncol = 1, heights = c(2,2,2))
+
+```
+
+
+
+
+```{r wos-fig6-georghiou, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6, fig.cap="Culex, Georghiou & Taylor 1986"}
+
+### Georghiou & Taylor 1986 : similar patterns and including heterozygotes for Culex
+
+df_gt <- read_csv('wos-data-georghiou1986.csv')
+
+#removes blank rows and comments
+df_gt <- filter(df_gt, !is.na(mort_assumed))
+
+#dominance calculation
+RR <- filter(df_gt,genotype=='RR') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+SR <- filter(df_gt,genotype=='SR') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+SS <- filter(df_gt,genotype=='SS') %>% select(mort_assumed) %>% unlist(use.names=FALSE)
+#beware function expects fitness 0-1
+model_inputs <- resistance::inputs_from_gen_fit(SS=(100-SS)/100, SR=(100-SR)/100, RR=(100-RR)/100)
+
+df_gt <- df_gt %>% mutate(dominance = NA) %>% 
+         mutate(dominance=replace(dominance, genotype=='RR', model_inputs$dom)) 
+
+
+#setting here so it can be applied to sim plot below too
+sc_x_gt <- scale_x_continuous(trans=reverselog_trans(10), 
+                     #breaks=c(1,0.8,0.4,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001)) +
+                     #limits=c(2,0.00001), #set limits to line up with other plots
+                     breaks=c(1,0.1,0.01,0.001,0.0001)) 
+
+gg_gt <- df_gt %>% 
+  
+      ggplot(aes(x=concentration, y=mort_est, col=genotype))+
+      geom_point(size=1) +
+      geom_line( stat = "summary", fun.y = "mean" ) +
+  
+      #adding dominance values as text
+      geom_text(aes(y=110, label=signif(dominance,1), col=NULL), size=2.6, col='grey40', angle=45, show.legend=FALSE) +
+      annotate("text", x=Inf, y=120, hjust=0, label = "dominance", cex=2.6, col='grey40') +    
+  
+      theme_minimal() +
+      
+      theme( legend.position = 'bottom') +
+      ggtitle( "A.") +
+  
+      #gpal pallete defined above, to keep RR, SS same irrespective of other genotypes
+      scale_colour_manual("Genotype", values = gpal) +
+  
+      sc_x_gt +
+ 
+      scale_y_continuous( limits = c(0,120),
+                          breaks = c(0,50,100)) +   
+      labs(y='% mortality') + 
+      labs(x='Permethrin concentration ppm (declining)') 
+  
+
+    #plot(gg_gt)
+
+dfsim_gt <- NULL
+dfadv_gt <- NULL
+
+exposure <- 0.3
+
+for(startfreq in c(0.01,0.0001))
+{
+
+  #li
+  dfmortbygen <- df_gt
+  #mort needs to be 0-1
+  dfmortbygen$mort_assumed <- 0.01*dfmortbygen$mort_assumed
+  
+  #rbind results for different starting frequencies
+  dfsim_gt <- rbind(dfsim_gt, wos_sim(dfmortbygen=dfmortbygen,
+                   x='concentration',
+                   y='mort_assumed',
+                   exposure = exposure,
+                   max_gen = 1000,
+                   startfreq = startfreq,
+                   plot = FALSE))
+  
+  
+  dfadv_gt <- rbind(dfadv_gt, wos_advantage(dfmortbygen=dfmortbygen,
+                       x='concentration',
+                       y='mort_assumed',
+                       exposure = exposure,
+                       startfreq = startfreq)) 
+
+}
+
+gg_gtsim <- wos_plot_sim(dfsim_gt, plot=FALSE, xreverse=TRUE, xlog=TRUE, xtxt=FALSE, title='C.', shape='start_frequency', addgrid=TRUE)
+
+#log selective advantage
+gg_gtadv_log <- wos_plot_sim(dfadv_gt, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=TRUE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title='B.', shape='start_frequency', addgrid=TRUE)
+
+
+#plot using patchwork
+
+#theme elements to use
+th_no_lg <- theme(legend.position = "none")
+th_no_tx <- theme(axis.title.x = element_blank())
+th_no_gmy <- theme(panel.grid.minor.y = element_blank())
+th_sm_ti <- theme(plot.title = element_text(size = rel(0.6)))
+th_box <- theme(panel.border=element_rect(fill=NA, colour='grey') )
+
+#had to reset log scale to get pretty breaks
+#(gg_gt + th_no_lg)
+(gg_gt) / (gg_gtadv_log + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency')) +
+          scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1),trans='log')) /
+          (gg_gtsim + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency'))) +
+
+ plot_layout(ncol = 1, heights = c(2,2,2))
+
+
+```
+
+```{r wos-fig-S3.5-corbel-SR, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6, fig.cap="Published mortality data for Anopheles (Corbel 2004) including heterozygotes, selective advantage and time-to-resistance"}
+
+### Corbel2004 anopheles SR, editing code from Li2008
+
+df_co <- read_csv('wos-data-corbel2004.csv')
+
+#removes blank rows and comments
+df_co <- filter(df_co, !is.na(mortality))
+
+RR <- filter(df_co,genotype=='RR') %>% select(mortality) %>% unlist(use.names=FALSE)
+SR <- filter(df_co,genotype=='SR') %>% select(mortality) %>% unlist(use.names=FALSE)
+SS <- filter(df_co,genotype=='SS') %>% select(mortality) %>% unlist(use.names=FALSE)
+#TODO simpler to just calc dominance heer or add cleaner function to resistance to calc dominance
+#beware function expects fitness 0-1
+model_inputs <- resistance::inputs_from_gen_fit(SS=(100-SS)/100, SR=(100-SR)/100, RR=(100-RR)/100)
+
+#todo improve this
+#beware this relies on being same number of RR,SR,SS all in same order
+#just fills for RR
+df_co$dominance <- NA
+df_co$dominance[1:length(model_inputs$dom)] <- model_inputs$dom
+
+gg_co <- df_co %>% 
+  
+      ggplot(aes(x=concentration, y=mortality, col=genotype))+
+      geom_point(size=1) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      geom_line() +
+      #adding dominance values as text
+      geom_text(aes(y=110, label=signif(dominance,1), col=NULL), size=2.6, col='grey40', show.legend=FALSE) +
+      annotate("text", x=Inf, y=120, hjust=0, label = "dominance", cex=2.6, col='grey40') +
+  
+      theme_minimal() +
+
+      theme( legend.position = 'bottom') +  
+      ggtitle( "A.") +    
+    
+      #gpal pallete defined above, to keep RR, SS same irrespective of other genotypes
+      scale_colour_manual("Genotype", values = gpal) +
+  
+      #facet_wrap('insecticide', ncol=1) +
+  
+      #scale_x_continuous(breaks=c(1,0.1,0.01,0.001,0.0001)) +
+      #reverse log scale for concentration
+      scale_x_continuous(trans=reverselog_trans(10)) +
+ 
+      #>100 to allow for dominance values
+      scale_y_continuous( limits = c(0,120),
+                          breaks = c(0,50,100)) +#,110),
+                          #labels = c(0,50,100,'dominance')) +  
+      labs(y='mortality % 24hrs') + 
+      labs(x='permethrin concentration mg/m2 (declining)')
+  
+      # scale_color_hue(l=30) + #higher l value makes lighter
+
+    #plot(gg_li)
+
+#A mortality
+#B log selective advantage, freq .01 & .001
+#C sim time-to-r
+
+# time-to-resistance from simulations corresponding to the field data 
+# and selective advantage, and relative fitness plots logged and not
+
+dfsim_co <- NULL
+dfadv_co <- NULL
+
+exposure = 0.3
+
+for(startfreq in c(0.01,0.0001))
+{
+
+  #co
+  dfmortbygen <- df_co
+  #mort needs to be 0-1
+  dfmortbygen$mortality <- 0.01*dfmortbygen$mortality
+  
+  #rbind results for different starting frequencies
+  dfsim_co <- rbind(dfsim_co, wos_sim(dfmortbygen=dfmortbygen,
+                   x='concentration',
+                   y='mortality',
+                   exposure = exposure,
+                   max_gen = 1000,
+                   startfreq = startfreq,
+                   plot = FALSE))
+  
+  
+  dfadv_co <- rbind(dfadv_co, wos_advantage(dfmortbygen=dfmortbygen,
+                       x='concentration',
+                       y='mortality',
+                       exposure = exposure,
+                       startfreq = startfreq)) 
+
+}
+
+gg_cosim <- wos_plot_sim(dfsim_co, plot=FALSE, xreverse=TRUE, xlog=TRUE, xtxt=FALSE, title='C.', shape='start_frequency', addgrid=TRUE)
+
+#log selective advantage
+gg_coadv_log <- wos_plot_sim(dfadv_co, x='conc', y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=TRUE, xlog=TRUE, ylog=TRUE, xtxt=FALSE,plot=FALSE,
+                         title='B.', shape='start_frequency', addgrid=TRUE)
+
+
+#plot using patchwork
+
+#theme elements to use
+th_no_lg <- theme(legend.position = "none")
+th_no_tx <- theme(axis.title.x = element_blank())
+th_no_gmy <- theme(panel.grid.minor.y = element_blank())
+th_sm_ti <- theme(plot.title = element_text(size = rel(0.6)))
+
+#had to reset log scale to get pretty breaks
+#(gg_co + th_no_lg)
+(gg_co) / (gg_coadv_log + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency')) +
+          scale_y_continuous(breaks=c(0.00001,0.0001,0.001,0.01,0.1),trans='log')) /
+          (gg_cosim + geom_line(linetype=2) + th_no_gmy + 
+          scale_shape_manual(values=c(1,2),guide=guide_legend(title='start resistance\nfrequency'))) +
+
+ plot_layout(ncol = 1, heights = c(2,2,2))
+
+```
+
+```{r wos-fig-S3.6-mckenzie, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=8, fig.cap="Blowfly, McKenzie and Whitton 1982"}
+
+### McKenzie Whitton 1982, includes heterozygotes, sheep blowfly
+
+# Note that the genotype viabilities are relative, not absolute, so cannot be used to estimate selection in the same way that we did in the previous two examples.
+# this code does estimate selection, but lower plots not shown in SI 
+
+df_mw <- read_csv('wos-data-mckenzie-whitton1982.csv')
+
+#removes blank rows and comments
+df_mw <- filter(df_mw, !is.na(viability))
+
+#truncate any values >1 to 1
+df_mw$viability <- ifelse(df_mw$viability>1,1,df_mw$viability)
+
+#labelling in original plot says relative viability
+df_mw$mortality <- 100 * (1 - df_mw$viability)
+
+#so that dieldrin plot goes first
+df_mw$insecticide <- factor(df_mw$insecticide, levels=c("dieldrin","diazinon"))
+
+#dominance calculation, needs to be done for different insecticides
+RR <- filter(df_mw,genotype=='RR') %>% select(mortality) %>% unlist(use.names=FALSE)
+SR <- filter(df_mw,genotype=='SR') %>% select(mortality) %>% unlist(use.names=FALSE)
+SS <- filter(df_mw,genotype=='SS') %>% select(mortality) %>% unlist(use.names=FALSE)
+#beware function expects fitness 0-1
+model_inputs <- resistance::inputs_from_gen_fit(SS=(100-SS)/100, SR=(100-SR)/100, RR=(100-RR)/100)
+
+#insecticide=="dieldrin" & 
+df_mw <- df_mw %>% mutate(dominance = NA) %>% 
+         mutate(dominance=replace(dominance, genotype=='RR', model_inputs$dom)) 
+
+#todo improve this
+#beware this relies on being same number of RR,SR,SS all in same order
+#just fills for RR
+# df_mw$dominance <- NA
+# df_mw$dominance[1:length(model_inputs$dom)] <- model_inputs$dom
+
+gg_mw <- df_mw %>% 
+  
+      ggplot(aes(x=weeks, y=mortality, col=genotype))+
+      geom_point(size=1) +
+      #geom_line( stat = "summary", fun.y = "mean" ) +
+      geom_line() +
+  
+      #adding dominance values as text
+      geom_text(aes(y=110, label=signif(dominance,1), col=NULL), size=2.6, col='grey40', show.legend=FALSE) +
+      annotate("text", x=5, y=120, hjust=0, label = "dominance", cex=2.6, col='grey40') +  
+  
+      theme_minimal() +
+  
+      theme( legend.position = 'bottom') +
+      ggtitle( "A. Sheep blowfly, Mckenzie and Whitton 1982") +
+  
+      #gpal pallete defined above, to keep RR, SS same irrespective of other genotypes
+      scale_colour_manual("Genotype", values = gpal) +
+  
+      #scale_x_continuous(breaks = c(0,10,20,30)) +
+      scale_x_continuous(limits = c(5,30)) + #had to do this to line up w plots below, don't know why
+ 
+      scale_y_continuous( limits = c(0,120),
+                          breaks = c(0,50,100)) +   
+      labs(y='relative mortality') + 
+      labs(x='weeks')+ 
+  
+      facet_wrap('insecticide', nrow=1)     
+  
+      # scale_color_hue(l=30) + #higher l value makes lighter
+
+    #plot(gg_mw)
+dfsim_mw <- NULL
+dfadv_mw <- NULL
+
+exposure <- 0.3
+
+for(startfreq in c(0.01,0.0001))
+{
+
+  #mw is diff from other data in that there are 2 separate insecticides, dieldrin and diazinon
+  #maybe I can keep the code the same and just add a horizontal facet at end ?
+  #BUT the insecticide column is not retained by wos_sim ...
+  #so prob better to run for each insecticide separately ...
+  for(insecticide in c('dieldrin','diazinon'))
+  {
+    #!! to get the variable into dplyr
+    dfmortbygen <- filter(df_mw,insecticide==!!insecticide)
+    
+    dfmortbygen$mort_assumed <- dfmortbygen$mortality
+    #mort needs to be 0-1
+    dfmortbygen$mort_assumed <- 0.01*dfmortbygen$mort_assumed
+    
+    #rbind results for different starting frequencies
+    dftmp <- wos_sim(dfmortbygen=dfmortbygen,
+                     x='weeks',
+                     y='mort_assumed',
+                     exposure = exposure,
+                     max_gen = 1000,
+                     startfreq = startfreq,
+                     plot = FALSE)
+    dftmp$insecticide <- insecticide
+    dfsim_mw <- rbind(dfsim_mw, dftmp) 
+    
+    dftmp <- wos_advantage(dfmortbygen=dfmortbygen,
+                         x='weeks',
+                         y='mort_assumed',
+                         exposure = exposure,
+                         startfreq = startfreq) 
+    dftmp$insecticide <- insecticide
+    dfadv_mw <- rbind(dfadv_mw,dftmp)
+    
+  } #end insecticide
+} #end startfreq
+
+#so that dieldrin plot goes first
+dfsim_mw$insecticide <- factor(dfsim_mw$insecticide, levels=c("dieldrin","diazinon"))
+dfadv_mw$insecticide <- factor(dfadv_mw$insecticide, levels=c("dieldrin","diazinon"))
+  
+gg_mwsim <- wos_plot_sim(dfsim_mw, plot=FALSE, xreverse=FALSE, xlog=FALSE, xtxt=TRUE, title='C.', shape='start_frequency')
+
+gg_mwsim <- gg_mwsim + facet_wrap('insecticide', nrow=1) +
+  #remove facet labels
+  theme(strip.background = element_blank(), strip.text = element_blank())
+
+#log selective advantage
+#x='weeks', note that while x is weeks wos_advantage() auto puts conc in
+gg_mwadv_log <- wos_plot_sim(dfadv_mw, y='selective_advantage', ylab='log selective\nadvantage',
+                         xreverse=FALSE, xlog=FALSE, ylog=TRUE, xtxt=TRUE,plot=FALSE,
+                         title='B.', shape='start_frequency')
+
+gg_mwadv_log <- gg_mwadv_log + facet_wrap('insecticide', nrow=1)+
+  #remove facet labels
+  theme(strip.background = element_blank(), strip.text = element_blank())
+
+#plot using patchwork
+
+#theme elements to use
+th_no_lg <- theme(legend.position = "none")
+th_lg_bo <- theme(legend.position = "bottom")
+th_no_tx <- theme(axis.title.x = element_blank())
+th_no_gmy <- theme(panel.grid.minor.y = element_blank())
+th_sm_ti <- theme(plot.title = element_text(size = rel(0.6)))
+th_box <- theme(panel.border=element_rect(fill=NA, colour='grey') )
+
+#had to reset log scale to get pretty breaks
+#(gg_mw + th_no_lg)
+(gg_mw+th_box) / (gg_mwadv_log + geom_line(linetype=2) + th_no_gmy + th_no_lg + th_box + scale_shape_manual(values=c(1,2)) +
+          scale_y_continuous(breaks=c(0.0001,0.001,0.01,0.1,1), limits=c(0.0001,1),trans='log')) /
+  
+          (gg_mwsim + geom_line(linetype=2) + th_no_gmy + th_lg_bo + th_box + scale_shape_manual(values=c(1,2))) + 
+
+ plot_layout(ncol = 1, heights = c(2,2,2))
+
+```
+
+
+```{r wos-fig-S5.1-polygenic, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=4, fig.cap="likely windows of selection when resistance is polygenic"}
+
+wos::wos_diag_polygenic()
+
+```
+
+```{r wos-fig7-dominance0or1, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=7.5, fig.cap="implications of not knowing behaviour of heterozygotes"}
+
+# fig to demonstrate the difference that dominance and heterozygotes can make
+
+# worst-case scenario, dominance 1 at all concentrations
+#wos_diagram(win_dom_strt=1,adv=TRUE)
+
+# best-case scenario, dominance 0 at all concentrations
+
+#Error: Discrete value supplied to continuous scale 
+#may be because resistance thresholds not reached when dominance 0
+#may need to set dominance to a low value instead ?
+#or start with a higher starting_freq 0.01 - yes that seems to work
+
+dfsimdom0 <- wos_diagram(win_dom_strt=0,sim=TRUE,conc_n=30,addlabels=FALSE,startfreq = 0.01,addshading=FALSE, plot=FALSE )
+dfsimdomchange <- wos_diagram(win_dom_strt=0.5,sim=TRUE,conc_n=30,addlabels=FALSE,startfreq = 0.01,addshading=FALSE, plot=FALSE )
+dfsimdom1 <- wos_diagram(win_dom_strt=1,sim=TRUE,conc_n=30,addlabels=FALSE,startfreq = 0.01,addshading=FALSE, plot=FALSE )
+
+
+#ideally I would have in the same df so I could facet to keep scales the same
+#todo that i think would need to add a column for dominance(best-case, worst-case), rbind and then facet by dominance
+
+dfsimdom0$constant_dominance <- 'best-case, constant 0'
+dfsimdomchange$constant_dominance <- 'intermediate'
+dfsimdom1$constant_dominance <- 'worst-case, constant 1'
+
+#dfsimdom <- rbind(dfsimdom0,dfsimdom1)
+dfsimdom <- rbind(dfsimdom0,dfsimdomchange,dfsimdom1)
+
+
+ggsimdom <- ggplot(dfsimdom, aes(x=conc, y=time_to_resistance0.5, shape=constant_dominance)) +
+
+  geom_point() +
+  #to make shapes open
+  scale_shape_manual(values=c(0,3,2),
+                     guide=guide_legend(title = 'Dominance')) +
+  #geom_line(lwd=2,alpha=0.6) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +
+  #labs(title = title) +
+  labs(title = paste0("D. simulation")) +
+  #scale_y_continuous(limits=c(0,NA)) +
+  labs(x='', y='time to\nresistance') +
+  scale_x_continuous(trans='reverse')
+
+
+ggdiagworst <- wos_diagram(win_dom_strt=1,sim=FALSE,addlabels=FALSE,addshading = FALSE, title = 'C. worst-case dominance constant 1', plot=FALSE)
+ggdiagchange <- wos_diagram(win_dom_strt=0.5,sim=FALSE,addlabels=FALSE,addshading = FALSE, title = 'B. intermediate, changing dominance', plot=FALSE)
+ggdiagbest <- wos_diagram(win_dom_strt=0,sim=FALSE,addlabels=FALSE,addshading = FALSE, title = 'A. best-case dominance constant 0', plot=FALSE)
+
+#move and remove some legends
+ggdiagbest <- ggdiagbest + theme(legend.position = "none") +
+                           scale_x_continuous(trans = 'reverse',labels=element_blank(), breaks=NULL)
+ggdiagworst <- ggdiagworst + theme(legend.position = "none")
+ggdiagchange <- ggdiagchange + theme(legend.position = "right") +
+                           scale_x_continuous(trans = 'reverse',labels=element_blank(), breaks=NULL)
+
+#plot showing times to resistance
+#plot( ggdiagbest / ggdiagworst / ggsimdom )
+plot( ggdiagbest / ggdiagchange / ggdiagworst / ggsimdom ) +
+   plot_layout(ncol = 1, heights = c(1,1,1,1.4))
+
+```
+
+

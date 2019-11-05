@@ -1,0 +1,111 @@
+Strain,resistance,Conc. ug/ml,concentration_ppm,KD  60 min,Mortality  24h,Total mosquitoes,%  KD 60 min ,mort_pcent,Date
+Tiassale (lab resistant),resistant,5,0.005,0,0,24,0,0,11/02/2014
+Tiassale (lab resistant),resistant,5,0.005,0,2,25,0,8,11/02/2014
+Tiassale (lab resistant),resistant,15,0.015,1,1,23,4.3,4.3,13/02/2014
+Tiassale (lab resistant),resistant,15,0.015,0,0,23,0,0,13/02/2014
+Tiassale (lab resistant),resistant,30,0.03,21,13,22,95.5,59.1,13/02/2014
+Tiassale (lab resistant),resistant,50,0.05,24,20,25,96,80,11/02/2014
+Tiassale (lab resistant),resistant,50,0.05,22,16,24,91.7,66.7,11/02/2014
+Tiassale (lab resistant),resistant,50,0.05,19,16,23,82.6,69.6,13/02/2014
+Tiassale (lab resistant),resistant,50,0.05,20,5,20,100,25,13/02/2014
+Tiassale (lab resistant),resistant,50,0.05,24,21,26,92.3,80.8,13/02/2014
+Tiassale (lab resistant),resistant,100,0.1,26,24,27,96.3,88.9,11/02/2014
+Tiassale (lab resistant),resistant,100,0.1,26,22,27,96.3,81.5,11/02/2014
+Tiassale (lab resistant),resistant,100,0.1,23,22,25,92,88,13/02/2014
+Tiassale (lab resistant),resistant,100,0.1,25,23,26,96.2,88.5,13/02/2014
+Tiassale (lab resistant),resistant,100,0.1,25,24,25,100,96,13/02/2014
+Tiassale (lab resistant),resistant,200,0.2,28,27,28,100,96.4,11/02/2014
+Tiassale (lab resistant),resistant,200,0.2,25,25,25,100,100,11/02/2014
+Tiassale (lab resistant),resistant,200,0.2,24,24,24,100,100,13/02/2014
+Tiassale (lab resistant),resistant,200,0.2,26,26,26,100,100,13/02/2014
+Tiassale (lab resistant),resistant,200,0.2,25,24,25,100,96,13/02/2014
+Tiassale (lab resistant),resistant,Control,0,0,1,25,0,4,11/02/2014
+Tiassale (lab resistant),resistant,Control,0,0,0,24,0,0,11/02/2014
+Tiassale (lab resistant),resistant,Control,0,0,0,15,0,0,13/02/2014
+Tororo (lab resistant),resistant,2,0.002,8,2,23,34.8,8.7,12/04/2014
+Tororo (lab resistant),resistant,5,0.005,13,2,27,48.1,7.4,12/04/2014
+Tororo (lab resistant),resistant,5,0.005,19,1,21,90.5,4.8,13/04/2014
+Tororo (lab resistant),resistant,5,0.005,14,7,15,93.3,46.7,26/04/2014
+Tororo (lab resistant),resistant,5,0.005,12,3,23,52.2,13,29/04/2014
+Tororo (lab resistant),resistant,5,0.005,21,5,27,77.8,18.5,29/04/2014
+Tororo (lab resistant),resistant,10,0.01,17,7,24,70.8,29.2,12/04/2014
+Tororo (lab resistant),resistant,10,0.01,15,2,19,78.9,10.5,13/04/2014
+Tororo (lab resistant),resistant,10,0.01,20,11,20,100,55,26/04/2014
+Tororo (lab resistant),resistant,10,0.01,18,11,21,85.7,52.4,29/04/2014
+Tororo (lab resistant),resistant,10,0.01,27,14,28,96.4,50,29/04/2014
+Tororo (lab resistant),resistant,20,0.02,28,16,29,96.6,55.2,12/04/2014
+Tororo (lab resistant),resistant,20,0.02,16,8,17,94.1,47.1,13/04/2014
+Tororo (lab resistant),resistant,20,0.02,16,13,17,94.1,76.5,26/04/2014
+Tororo (lab resistant),resistant,20,0.02,18,16,19,94.7,84.2,26/04/2014
+Tororo (lab resistant),resistant,40,0.04,20,18,20,100,90,26/04/2014
+Tororo (lab resistant),resistant,40,0.04,22,22,22,100,100,26/04/2014
+Tororo (lab resistant),resistant,40,0.04,24,23,24,100,95.8,29/04/2014
+Tororo (lab resistant),resistant,80,0.08,15,14,15,100,93.3,26/04/2014
+Tororo (lab resistant),resistant,80,0.08,25,24,25,100,96,29/04/2014
+Tororo (lab resistant),resistant,80,0.08,28,27,28,100,96.4,29/04/2014
+Tororo (lab resistant),resistant,80,0.08,33,32,33,100,97,29/04/2014
+Tororo (lab resistant),resistant,Control,0,1,1,20,5,5,12/04/2014
+Tororo (lab resistant),resistant,Control,0,0,1,21,0,4.8,26/04/2014
+Tororo (lab resistant),resistant,Control,0,0,0,23,0,0,29/04/2014
+Kisumu (susceptible),susceptible,0.2,0.0002,22,4,25,88,16,21/11/2013
+Kisumu (susceptible),susceptible,0.2,0.0002,25,10,26,96.15,38.46,21/11/2013
+Kisumu (susceptible),susceptible,0.2,0.0002,19,8,28,67.86,28.57,21/11/2013
+Kisumu (susceptible),susceptible,0.2,0.0002,21,12,24,87.5,50,21/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,16,13,20,80,65,19/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,24,24,28,85.71,85.71,20/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,18,15,19,94.74,78.95,20/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,18,16,20,90,80,20/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,20,13,20,100,65,20/11/2013
+Kisumu (susceptible),susceptible,0.5,0.0005,22,22,26,84.62,84.62,21/11/2013
+Kisumu (susceptible),susceptible,1,0.001,21,24,27,77.78,88.89,19/11/2013
+Kisumu (susceptible),susceptible,1,0.001,24,23,25,96,92,20/11/2013
+Kisumu (susceptible),susceptible,1,0.001,17,16,17,100,94.12,20/11/2013
+Kisumu (susceptible),susceptible,1,0.001,25,23,28,89.29,82.14,20/11/2013
+Kisumu (susceptible),susceptible,1,0.001,25,23,27,92.59,85.19,21/11/2013
+Kisumu (susceptible),susceptible,1,0.001,24,20,24,100,83.33,21/11/2013
+Kisumu (susceptible),susceptible,2,0.002,26,26,26,100,100,19/11/2013
+Kisumu (susceptible),susceptible,2,0.002,27,26,27,100,96.3,20/11/2013
+Kisumu (susceptible),susceptible,2,0.002,20,20,20,100,100,20/11/2013
+Kisumu (susceptible),susceptible,2,0.002,28,26,28,100,92.86,20/11/2013
+Kisumu (susceptible),susceptible,2,0.002,30,31,32,93.75,96.88,21/11/2013
+Kisumu (susceptible),susceptible,2,0.002,24,24,24,100,100,20/11/2013
+Kisumu (susceptible),susceptible,3,0.003,25,25,25,100,100,19/11/2013
+Kisumu (susceptible),susceptible,4,0.004,26,26,26,100,100,19/11/2013
+Kisumu (susceptible),susceptible,5,0.005,23,23,23,100,100,19/11/2013
+Kisumu (susceptible),susceptible,Control,0,1,1,23,4.35,4.35,19/11/2013
+Kisumu (susceptible),susceptible,Control,0,1,1,23,4.35,4.35,20/11/2013
+Kisumu (susceptible),susceptible,Control,0,1,1,27,3.7,3.7,21/11/2013
+Tiefora (wild resistant),resistant,2.5,0.0025,,0,18,,0,07/10/2013
+Tiefora (wild resistant),resistant,5,0.005,,2,22,,9.09,14/11/2013
+Tiefora (wild resistant),resistant,5,0.005,,5,24,,20.83,12/11/2013
+Tiefora (wild resistant),resistant,5,0.005,,0,21,,0,07/10/2013
+Tiefora (wild resistant),resistant,5,0.005,,8,25,,32,16/11/2013
+Tiefora (wild resistant),resistant,10,0.01,,2,13,,15.38,07/10/2013
+Tiefora (wild resistant),resistant,10,0.01,,1,20,,5,15/10/2013
+Tiefora (wild resistant),resistant,20,0.02,,14,22,,63.64,14/11/2013
+Tiefora (wild resistant),resistant,20,0.02,,1,17,,5.88,15/10/2013
+Tiefora (wild resistant),resistant,20,0.02,,1,23,,4.35,21/10/2013
+Tiefora (wild resistant),resistant,20,0.02,,8,14,,57.14,07/10/2013
+Tiefora (wild resistant),resistant,40,0.04,,18,21,,85.71,14/11/2013
+Tiefora (wild resistant),resistant,40,0.04,,22,26,,84.62,12/11/2013
+Tiefora (wild resistant),resistant,40,0.04,,9,13,,69.23,07/10/2013
+Tiefora (wild resistant),resistant,40,0.04,,12,21,,57.14,15/10/2013
+Tiefora (wild resistant),resistant,40,0.04,,13,19,,68.42,17/10/2013
+Tiefora (wild resistant),resistant,40,0.04,,5,18,,27.78,21/10/2013
+Tiefora (wild resistant),resistant,60,0.06,,15,19,,78.95,15/10/2013
+Tiefora (wild resistant),resistant,60,0.06,,5,9,,55.56,17/10/2013
+Tiefora (wild resistant),resistant,80,0.08,,17,18,,94.44,14/11/2013
+Tiefora (wild resistant),resistant,80,0.08,,8,12,,66.67,17/10/2013
+Tiefora (wild resistant),resistant,80,0.08,,17,25,,68,21/10/2013
+Tiefora (wild resistant),resistant,80,0.08,,17,20,,85,16/11/2013
+Tiefora (wild resistant),resistant,100,0.1,,11,11,,100,17/10/2013
+Tiefora (wild resistant),resistant,120,0.12,,21,26,,80.77,14/11/2013
+Tiefora (wild resistant),resistant,120,0.12,,19,19,,100,17/10/2013
+Tiefora (wild resistant),resistant,120,0.12,,16,18,,88.89,16/11/2013
+Tiefora (wild resistant),resistant,Control,0,,0,20,,0,14/11/2013
+Tiefora (wild resistant),resistant,Control,0,,1,21,,4.76,12/11/2013
+Tiefora (wild resistant),resistant,Control,0,,0,10,,0,07/10/2013
+Tiefora (wild resistant),resistant,Control,0,,1,13,,7.69,15/10/2013
+Tiefora (wild resistant),resistant,Control,0,,0,13,,0,17/10/2013
+Tiefora (wild resistant),resistant,Control,0,,0,19,,0,21/10/2013
+Tiefora (wild resistant),resistant,Control,0,,0,10,,0,16/11/2013

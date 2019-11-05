@@ -1,0 +1,201 @@
+month_cat,months,deltamethrin_conc,mortality,resistance,column_head,,species
+3 to 6,3,63.75,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,66.94,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,81.99,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,63.54,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,70.71,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,53.64,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,66.09,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,97.33,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,72.35,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,66.2,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,72.78,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,56.61,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,70.58,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,64.2,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,68.89,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,56.5,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,57.32,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,71.83,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,62.88,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,8.63,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,52.71,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,65.32,100,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,31.96,92.5,susceptible,MortSusCDC,,An. gambiae
+3 to 6,6,33.42,92.3,susceptible,MortSusCDC,,An. gambiae
+3 to 6,3,58.24,85,susceptible,AaNazAdjMort,,An. arabiensis
+3 to 6,3,61.19,100,susceptible,AaNazAdjMort,,An. arabiensis
+3 to 6,3,62.8,100,susceptible,AaNazAdjMort,,An. arabiensis
+3 to 6,3,57.08,100,susceptible,AaNazAdjMort,,An. arabiensis
+3 to 6,3,58.24,68.57,wild,AaWildAdjMort,,Anopheles
+3 to 6,3,61.19,94.29,wild,AaWildAdjMort,,Anopheles
+3 to 6,3,62.8,100,wild,AaWildAdjMort,,Anopheles
+3 to 6,3,57.08,70,wild,AaWildAdjMort,,Anopheles
+14 to 20,17,73.38,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,17,57.59,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,17,58.78,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,17,17.78,33.33,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,48.07,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,44.24,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,36.43,97.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,57.33,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,22.34,82.93,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,47.51,94.87,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,27.41,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,91.7,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,20.87,86.84,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,45.55,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,93.7,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,1.89,80,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,45.07,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,11.56,87.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,45.52,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,48.07,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,35.86,87.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,65.8,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,1.36,92.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,14.61,95,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,28.26,92.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,67.71,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,44.67,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,18,20.73,78.57,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,64.68,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,46.1,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,52.83,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,47.73,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,21.51,80,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,63.46,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,21.64,77.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,19,43.57,87.5,susceptible,AaNazAdjMort,,An. arabiensis
+,21,64.95,85.37,susceptible,AaNazAdjMort,,An. arabiensis
+,21,67.71,97.5,susceptible,AaNazAdjMort,,An. arabiensis
+,21,44.67,97.5,susceptible,AaNazAdjMort,,An. arabiensis
+,21,20.73,72.5,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,15,36.9,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,15,21.58,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,15,41.54,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,15,48.27,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,29,35.89,97.37,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,29,40.77,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,29,45.05,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,29,26.06,89.19,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,40.49,94.29,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,30.06,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,48.96,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,23.88,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,40.56,94.59,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,47.35,94.59,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,65.05,94.59,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,22.2,91.89,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,13.25,85.71,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,62.5,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,39.3,94.29,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,18.85,77.14,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,38.49,90,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,61.05,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,36.36,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,14.87,68.42,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,42.45,97.37,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,57.18,97.37,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,47.27,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,52.31,94.74,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,57.9,97.5,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,13.07,75,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,32.47,80,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,30,32.36,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,85.54,94.74,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,47.86,94.74,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,84.85,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,75.95,100,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,58.4,94.74,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,16.44,78.95,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,54.93,86.84,susceptible,AaNazAdjMort,,An. arabiensis
+26 to 32,31,58.67,100,susceptible,AaNazAdjMort,,An. arabiensis
+,33,74.07,100,susceptible,AaNazAdjMort,,An. arabiensis
+,33,59.57,100,susceptible,AaNazAdjMort,,An. arabiensis
+,33,34.38,100,susceptible,AaNazAdjMort,,An. arabiensis
+,33,65.46,100,susceptible,AaNazAdjMort,,An. arabiensis
+14 to 20,17,73.38,97.15,wild,AaWildAdjMort,,Anopheles
+14 to 20,17,57.59,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,17,58.78,95.22,wild,AaWildAdjMort,,Anopheles
+14 to 20,17,17.78,80.56,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,48.07,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,44.24,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,36.43,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,57.33,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,22.34,83.37,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,47.51,90.46,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,27.41,97.56,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,91.7,97.37,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,20.87,97.38,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,45.55,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,93.7,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,1.89,88.8,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,45.07,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,11.56,91.87,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,45.52,95.17,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,48.07,73.68,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,35.86,67.44,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,65.8,95.56,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,1.36,61.9,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,14.61,70,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,28.26,86.54,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,67.71,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,44.67,92.32,wild,AaWildAdjMort,,Anopheles
+14 to 20,18,20.73,67.69,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,64.68,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,46.1,100,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,52.83,92.68,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,47.73,90,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,21.51,77.5,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,63.46,97.62,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,21.64,66.67,wild,AaWildAdjMort,,Anopheles
+14 to 20,19,43.57,93.02,wild,AaWildAdjMort,,Anopheles
+,21,64.95,97.86,wild,AaWildAdjMort,,Anopheles
+,21,67.71,95.73,wild,AaWildAdjMort,,Anopheles
+,21,44.67,95.12,wild,AaWildAdjMort,,Anopheles
+,21,20.73,78.95,wild,AaWildAdjMort,,Anopheles
+14 to 20,15,36.9,43.59,wild,AaWildAdjMort,,Anopheles
+14 to 20,15,21.58,5.13,wild,AaWildAdjMort,,Anopheles
+14 to 20,15,41.54,23.08,wild,AaWildAdjMort,,Anopheles
+14 to 20,15,48.27,69.23,wild,AaWildAdjMort,,Anopheles
+26 to 32,29,35.89,27.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,29,40.77,85,wild,AaWildAdjMort,,Anopheles
+26 to 32,29,45.05,27.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,29,26.06,15,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,40.49,30,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,30.06,90,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,48.96,70,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,23.88,55,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,40.56,55,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,47.35,52.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,65.05,62.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,22.2,57.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,13.25,30,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,62.5,50,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,39.3,32.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,18.85,0,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,38.49,17.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,61.05,27.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,36.36,37.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,14.87,12.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,42.45,57.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,57.18,55,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,47.27,60,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,52.31,45,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,57.9,52.5,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,13.07,15.38,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,32.47,20.51,wild,AaWildAdjMort,,Anopheles
+26 to 32,30,32.36,41.03,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,85.54,89.19,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,47.86,70.27,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,84.85,64.86,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,75.95,62.16,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,58.4,45.95,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,16.44,5.41,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,54.93,29.73,wild,AaWildAdjMort,,Anopheles
+26 to 32,31,58.67,56.76,wild,AaWildAdjMort,,Anopheles
+,33,74.07,75,wild,AaWildAdjMort,,Anopheles
+,33,59.57,67.5,wild,AaWildAdjMort,,Anopheles
+,33,34.38,77.5,wild,AaWildAdjMort,,Anopheles
+,33,65.46,62.5,wild,AaWildAdjMort,,Anopheles

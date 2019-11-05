@@ -1,0 +1,15 @@
+insecticide,genotype,concentration,mortality
+permethrin,RR,0,11
+permethrin,RR,100,28
+permethrin,RR,250,25
+permethrin,RR,500,30
+permethrin,SR,0,15
+permethrin,SR,100,41
+permethrin,SR,250,58
+permethrin,SR,500,67
+permethrin,SS,0,18
+permethrin,SS,100,58
+permethrin,SS,250,81
+permethrin,SS,500,83
+,,,
+"Read by eye from Corbel2004 Fig 2, mortalities are the means of 3 replicates",,,

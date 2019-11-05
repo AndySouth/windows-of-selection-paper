@@ -1,0 +1,10 @@
+insecticide,genotype,month,mortality
+net_deltamethrin,resistant,3,69
+net_deltamethrin,resistant,3,75
+net_deltamethrin,resistant,15,2
+,,,
+net_deltamethrin,susceptible,3,99
+net_deltamethrin,susceptible,15,99
+,,,
+,,,
+"Data from Mahama 2007, Effectiveness of Permanet in Cote D'Ivoire ",,,
