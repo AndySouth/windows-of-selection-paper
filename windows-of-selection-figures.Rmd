@@ -6,6 +6,10 @@ date: "`r Sys.Date()`"
 output: word_document
 ---
 
+R code to produce all figures for South et al. (in press, 2019) The role of windows of selection and windows of dominance in the evolution of insecticide resistance in human disease vectors. Evolutionary Applications.
+
+Knit this file to produce all figures as tiffs in wosfigs folder.
+
 Takes c 10 mins to run.
 
 Expected that figs may look bit weird in doc, but tiffs are good. Word resizes so right click on images and reset can help.
@@ -35,15 +39,17 @@ S3.6. McKenzie Whitton blowfly heterozygotes
 S5.1. polygenic windows 
 
 
-```{r libraries, include=FALSE}
-
-#(data are read in and manipulated by ir_assays2017.Rmd, just selected figures here)
+```{r development packages, include=FALSE}
 
 library(devtools)
 # code to make windows of selection diagrams
 devtools::install_github("AndySouth/wos")
 # code to run resistance evolution simulations
 devtools::install_github("AndySouth/resistance")
+
+```
+
+```{r libraries, include=FALSE}
 
 library(tidyverse)
 library(readxl)
