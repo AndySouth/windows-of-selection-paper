@@ -41,9 +41,9 @@ S5.1. polygenic windows
 
 library(devtools)
 # code to make windows of selection diagrams
-#devtools::install_github("AndySouth/wos")
+devtools::install_github("AndySouth/wos")
 # code to run resistance evolution simulations
-#devtools::install_github("AndySouth/resistance")
+devtools::install_github("AndySouth/resistance")
 
 library(tidyverse)
 library(readxl)
